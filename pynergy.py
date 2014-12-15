@@ -13,15 +13,22 @@ EIGEN = np.loadtxt(INPUT)
 KPTS = len(EIGEN)
 BANDS = len(EIGEN[0])
 
-FILE = open(OUTPUT, 'w')
+#FILE = open(OUTPUT, 'w')
+energies = []
 
-for kpt in range(0, KPTS):
+#for kpt in range(0, KPTS):
+for kpt in range(0, 1):
     for origin in range(1, BANDS):
         for target in range(origin + 1, BANDS):
             diff = abs(EIGEN[kpt, origin] - EIGEN[kpt, target])
-            result = 'k-point: {0:0>3d} |' \
-                     ' bands: {2:0>2d} -> {3:0>2d} |' \
-                     ' diff: {1:0>9.6f}\n'\
-                     .format(kpt + 1, diff, origin, target)
-            FILE.write(result)
-FILE.close()
+            entry = '{0:0>3d}.{1:0>2d}->{2:0>2d}'.format(kpt + 1, origin, target)
+            value = '{0:0>9.6f}'.format(diff)
+            energies.append(diff)
+            #result = '{1:0>9.6f} | ' \
+            #         'k-point: {0:0>3d} | ' \
+            #         'bands: {2:0>2d} -> {3:0>2d}\n' \
+            #         .format(kpt + 1, diff, origin, target)
+            #FILE.write(result)
+
+print energies.index(13.612660000000002)
+#FILE.close()
