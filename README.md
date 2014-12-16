@@ -33,6 +33,5 @@ set style arrow 3 head linetype 1 linecolor rgb "#000" linewidth 1.5 size screen
 
 To-Do
 --------
-files to Gnuplot-friendly input.
 * For Gnuplot arrows, filter out duplicate lines.
 * Add probability factors for different transitions.
