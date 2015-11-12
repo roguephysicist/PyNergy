@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/Users/sma/anaconda/bin/python
 """
 name: pynergy.py
 usage: pynergy.py [-h] -i INPUT [-o OUTPUT] [-c] -e ENERGY [-d DELTA] [-g]
@@ -39,11 +39,12 @@ def transitions(inputfile, outputfile):
     eigen = np.loadtxt(inputfile)  # Creates a numpy array from input file
     kpts = len(eigen)               # max k-points = file length
     bands = len(eigen[0])           # max bands = columns
+    valence = int(args.valence)     # user specified number of valence bands
 
     scratch = open(outputfile, 'w')   # Opens output file for writing
     for kpt in range(0, kpts):                      # Loops over k-points
-        for start in range(1, bands):               # Loops over all bands
-            for finish in range(start + 1, bands):  # Loops over upward bands
+        for start in range(1, valence+1):           # Loops over all valence bands
+            for finish in range(valence+1, bands):  # Loops over upward bands
                 orig = eigen[kpt, start]            # Value at origin band
                 targ = eigen[kpt, finish]           # Value at target band
                 diff = abs(orig - targ)             # The difference
@@ -73,6 +74,8 @@ parser = argparse.ArgumentParser(description='This script calculates '\
 parser.add_argument('-i', '--input', help='Input file name', required=True)
 parser.add_argument('-o', '--output', help='Output file name',
                     default='transitions.dat', required=False)
+parser.add_argument('-v', '--valence', help='Number of valence bands',
+                    required=True)
 parser.add_argument('-c', '--convert',
                     help='Converts a raw ABINIT eigen-energy file for '\
                     'easier plotting. This step is required to use this '\
