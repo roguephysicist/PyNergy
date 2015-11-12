@@ -27,12 +27,12 @@ parser = argparse.ArgumentParser(description='This script calculates '\
                         'finds all the upward transitions that can produce '\
                         'that value within a specified tolerance.')
 parser.add_argument('-i', '--input', help='Input file name', required=True)
-parser.add_argument('-v', '--valence', help='Number of valence bands', 
+parser.add_argument('-v', '--valence', help='Number of valence bands',
                     type=int, required=True)
-parser.add_argument('-e', '--energy', help='Energy value in eV', 
+parser.add_argument('-e', '--energy', help='Energy value in eV',
                     type=float, required=True)
-parser.add_argument('-d', '--delta', 
-                    help='Energy delta in eV (default = 0.001 eV)', 
+parser.add_argument('-d', '--delta',
+                    help='Energy delta in eV (default = 0.001 eV)',
                     type=float, default=0.001, required=False)
 args = parser.parse_args()
 
@@ -47,13 +47,13 @@ def transitions(inputfile, valence, energy, delta):
     file1 = open(textfile, 'w') # opens output file for writing
     file2 = open(arrowfile, 'w')    # opens output file for writing
     eigen = np.loadtxt(inputfile)   # creates a numpy array from input file
-    
+
     print 'Calculating transitions for {0} around {1} eV with a delta '\
           'of {2}'.format(inputfile, energy, delta)
-    
+
     kpts = len(eigen)   # max k-points = file length
     bands = len(eigen[0])   # max bands = columns
-    
+
     for kpt in range(0, kpts):  # loops over k-points
         for start in range(1, valence+1):   # over all valence bands
             for finish in range(valence+2, bands):  # over conduction bands
@@ -62,7 +62,7 @@ def transitions(inputfile, valence, energy, delta):
                 diff = abs(orig - targ) # the difference
                 # tests to see if diff is between desired value +/- delta
                 if energy - delta <= diff <= energy + delta:
-                    text = '{0:0>9.6f} eV | k-point: {1:0>3d} | ' +\
+                    text = '{0:0>9.6f} eV | k-point: {1:0>3d} | '\
                            'bands: {2:0>2d} -> {3:0>2d}\n'\
                            .format(diff, kpt + 1, start, finish)
                     file1.write(text)
