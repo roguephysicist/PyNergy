@@ -73,13 +73,12 @@ parser = argparse.ArgumentParser(description='This script calculates '\
 parser.add_argument('-i', '--input', help='Input file name', required=True)
 parser.add_argument('-o', '--output', help='Output file name',
                     default='transitions.dat', required=False)
-parser.add_argument('-v', '--valence', help='Number of valence bands',
-                    required=True)
-parser.add_argument('-c', '--convert',
-                    help='Converts a raw ABINIT eigen-energy file for '\
-                    'easier plotting. This step is required to use this '\
-                    'script if you are starting with an unformatted file.',
-                    action='store_true', required=False)
+#parser.add_argument('-v', '--valence', help='Number of valence bands', required=True)
+#parser.add_argument('-c', '--convert',
+#                    help='Converts a raw ABINIT eigen-energy file for '\
+#                    'easier plotting. This step is required to use this '\
+#                    'script if you are starting with an unformatted file.',
+#                    action='store_true', required=False)
 parser.add_argument('-e', '--energy', help='Energy value in eV',
                     type=float, required=True)
 parser.add_argument('-d', '--delta',
@@ -89,15 +88,15 @@ parser.add_argument('-g', '--gnuplot', help='Generates Gnuplot arrow codes',
                     action='store_true', required=False)
 args = parser.parse_args()
 
-if args.convert:
-    print 'Formatting {} and saving to eigen.dat'.format(args.input)
-    eigenformat(args.input, "eigen.dat")
-    print 'Calculating transitions for '\
-          'eigen.dat around {1} eV and saving to {0}'\
-          .format(args.output, args.energy)
-    transitions("eigen.dat", args.output)
-else:
-    print 'Calculating transitions for '\
-          '{0} around {2} eV and saving to {1}'\
-          .format(args.input, args.output, args.energy)
-    transitions(args.input, args.output)
+#if args.convert:
+#    print 'Formatting {} and saving to eigen.dat'.format(args.input)
+#    eigenformat(args.input, "eigen.dat")
+#    print 'Calculating transitions for '\
+#          'eigen.dat around {1} eV and saving to {0}'\
+#          .format(args.output, args.energy)
+#    transitions("eigen.dat", args.output)
+#else:
+print 'Calculating transitions for '\
+      '{0} around {2} eV and saving to {1}'\
+      .format(args.input, args.output, args.energy)
+transitions(args.input, args.output)
