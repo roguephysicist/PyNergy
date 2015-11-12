@@ -1,4 +1,3 @@
-#!/usr/bin/python
 """
 name: eigenconvert.py
 usage: eigenconvert.py <inputfile>

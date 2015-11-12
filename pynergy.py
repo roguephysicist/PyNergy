@@ -1,4 +1,3 @@
-#!/Users/sma/anaconda/bin/python
 """
 name: pynergy.py
 usage: pynergy.py [-h] -i INPUT [-o OUTPUT] [-c] -e ENERGY [-d DELTA] [-g]
