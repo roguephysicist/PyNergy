@@ -16,9 +16,9 @@ import sys
 import numpy as np
 
 INPUTFILE = sys.argv[1]
-VALENCE = sys.argv[2]
-ENERGY = sys.argv[3]
-DELTA = sys.argv[4]
+VALENCE = int(sys.argv[2])
+ENERGY = float(sys.argv[3])
+DELTA = float(sys.argv[4])
 
 OFFSET = 0
 
