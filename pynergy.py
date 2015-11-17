@@ -32,16 +32,13 @@ def transitions(inputfile, valence, energy, delta):
     file1 = open(textfile, 'w') # opens output file for writing
     file2 = open(arrowfile, 'w')    # opens output file for writing
     eigen = np.loadtxt(inputfile)   # creates a numpy array from input file
-
     print 'Calculating transitions for {0} around {1} eV with a delta '\
           'of {2}'.format(inputfile, energy, delta)
-
     kpts = len(eigen)   # max k-points = file length
     bands = len(eigen[0])   # max bands = columns
-
     for kpt in range(0, kpts):  # loops over k-points
         for start in range(1, valence+1):   # over all valence bands
-            for finish in range(valence+2, bands):  # over conduction bands
+            for finish in range(valence+1, bands):  # over conduction bands
                 orig = eigen[kpt, start]    # value at origin band
                 targ = eigen[kpt, finish]   # value at target band
                 diff = abs(orig - targ) # the difference
