@@ -56,7 +56,7 @@ def transitions(inputfile, valence, energy, delta):
 
     for kpt in range(0, kpts):  # loops over k-points
         for start in range(1, valence+1):   # over all valence bands
-            for finish in range(valence+2, bands):  # over conduction bands
+            for finish in range(valence+1, bands):  # over conduction bands
                 orig = eigen[kpt, start]    # value at origin band
                 targ = eigen[kpt, finish]   # value at target band
                 diff = abs(orig - targ) # the difference
