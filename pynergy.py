@@ -12,7 +12,7 @@ the adjoining 'eigenconvert.py' program that will automatically format it to a
 plottable file. You can then use that file to calculate the transitions.
 """
 
-import argparse
+import sys
 import numpy as np
 
 INPUTFILE = sys.argv[1]
