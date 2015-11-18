@@ -1,4 +1,6 @@
+#!/usr/bin/python
 """
+USAGE: pynergy.py <input> <klist> <# valence bands> <energy> <delta>
 name: pynergy.py
 author: Sean Anderson (https://github.com/roguephysicist)
 
@@ -13,16 +15,23 @@ plottable file. You can then use that file to calculate the transitions.
 """
 
 import sys
+import linecache
 import numpy as np
 
 INPUTFILE = sys.argv[1]
-VALENCE = int(sys.argv[2])
-ENERGY = float(sys.argv[3])
-DELTA = float(sys.argv[4])
+KLISTFILE = sys.argv[2]
+VALENCE = int(sys.argv[3])
+ENERGY = float(sys.argv[4])
+DELTA = float(sys.argv[5])
 
 OFFSET = 0
 
-def transitions(inputfile, valence, energy, delta):
+def getkpoint(kfile, linenumber):
+    """ extracts the right line from klist file """
+    line = linecache.getline(kfile, linenumber).split()
+    return line
+
+def transitions(inputfile, klistfile, valence, energy, delta):
     """
     loops over all values in input file and calculates upward transitions
     and selects only the ones that match the desired value.
@@ -44,9 +53,11 @@ def transitions(inputfile, valence, energy, delta):
                 diff = abs(orig - targ) # the difference
                 # tests to see if diff is between desired value +/- delta
                 if energy - delta <= diff <= energy + delta:
-                    text = '{0:0>9.6f} eV | k-point: {1:0>3d} | '\
-                           'bands: {2:0>2d} -> {3:0>2d}\n'\
-                           .format(diff, kpt + 1, start, finish)
+                    kpoint = getkpoint(klistfile, kpt + 1)
+                    text = '{0:0>9.6f} eV | k-point: {1:0>3d} '\
+                           '({2}  {3}  {4}) | bands: {5:0>2d} -> {6:0>2d}\n'\
+                           .format(diff, kpt + 1, kpoint[0], kpoint[1],
+                            kpoint[2], start, finish)
                     file1.write(text)
                     arrows = 'set arrow from {0},{1:.5f} to {0},{2:.5f}\n'\
                              .format(kpt + 1, orig - OFFSET, targ - OFFSET)
@@ -56,4 +67,4 @@ def transitions(inputfile, valence, energy, delta):
     file2.close()   # closes file
     print 'Writing ===> {0}'.format(arrowfile)
 
-transitions(INPUTFILE, VALENCE, ENERGY, DELTA)
+transitions(INPUTFILE, KLISTFILE, VALENCE, ENERGY, DELTA)
