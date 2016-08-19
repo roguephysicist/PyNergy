@@ -42,8 +42,8 @@ def transitions(inputfile, valence, energy, delta):
     loops over all values in input file and calculates upward transitions
     and selects only the ones that match the desired value.
     """
-    textfile = 'transitions.dat'
-    arrowfile = 'gnuplotarrows.txt'
+    textfile = 'transitions.txt'
+    arrowfile = 'gnuplotarrows'
     file1 = open(textfile, 'w') # opens output file for writing
     file2 = open(arrowfile, 'w')    # opens output file for writing
     eigen = np.loadtxt(inputfile)   # creates a numpy array from input file

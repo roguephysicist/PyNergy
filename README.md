@@ -2,7 +2,7 @@ pynergy.py
 ==============
 
 ```sh
-usage: pynergy.py [-h] -i INPUT -v VALENCE -e ENERGY [-d DELTA]
+usage: python pynergy.py [-h] -i INPUT -v VALENCE -e ENERGY [-d DELTA]
 ```
 
 ![](bands.png)
@@ -18,8 +18,10 @@ plottable file. You can then use that file to calculate the transitions.
 You can generate the sample output with 
 
 ```
-./pynergy.py -i sample_EIG -v 3 -e 6.81
+python pynergy.py -i eigen_formatted -v 3 -e 6.81
 ```
+
+This creates two files, `transitions.txt` and `gnuplotarrows`. The first is a text file that writes out the information about each transition, and the second is contains the lines necessary to produce arrows in Gnuplot. Simply `load` the file from within Gnuplot and `rep` to get your arrows.
 
 A good gnuplot arrow style can be
 
