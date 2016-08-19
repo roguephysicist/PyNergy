@@ -14,8 +14,13 @@ transitions that can produce that value within a specified tolerance.
 
 If the input file is an unformatted EIG file produced by ABINIT, you can use
 the adjoining 'eigenconvert.py' program that will automatically format it to a
-plottable file. You can then use that file to calculate the transitions.
-You can generate the sample output with 
+plottable file:
+
+```
+python eigenconvert.py inputfile outputfile
+```
+
+You can then use that file to calculate the transitions. You can generate a sample output with 
 
 ```
 python pynergy.py -i eigen_formatted -v 3 -e 6.81

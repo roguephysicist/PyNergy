@@ -10,6 +10,9 @@ ABINIT to a plottable file.
 import sys
 import re
 
+infile=sys.argv[1]
+outfile=sys.argv[2]
+
 def eigenformat(inputfile, outputfile):
     """ formats ABINIT eig file for easy plotting """
     print "Reading file {0}".format(inputfile)
@@ -21,4 +24,4 @@ def eigenformat(inputfile, outputfile):
         ofile.write(final)
     print "Created formatted eigenvalue file {0}".format(outputfile)
 
-eigenformat(sys.argv[1], 'eigen.dat')
+eigenformat(infile, outfile)
