@@ -1,3 +1,4 @@
+#!/opt/science/anaconda3/bin/python
 """
 name: pynergy.py
 usage: pynergy.py [-h] -i INPUT -v VALENCE -e ENERGY [-d DELTA]
@@ -42,10 +43,10 @@ def transitions(inputfile, valence, energy, delta):
     loops over all values in input file and calculates upward transitions
     and selects only the ones that match the desired value.
     """
-    textfile = 'transitions.txt'
+    # textfile = 'transitions.txt'
     arrowfile = 'gnuplotarrows'
-    file1 = open(textfile, 'w') # opens output file for writing
-    file2 = open(arrowfile, 'w')    # opens output file for writing
+    # file1 = open(textfile, 'w') # opens output file for writing
+    file = open(arrowfile, 'w')    # opens output file for writing
     eigen = np.loadtxt(inputfile)   # creates a numpy array from input file
 
     print('Calculating transitions for {0} around {1} eV with a delta '\
@@ -62,16 +63,16 @@ def transitions(inputfile, valence, energy, delta):
                 diff = abs(orig - targ) # the difference
                 # tests to see if diff is between desired value +/- delta
                 if energy - delta <= diff <= energy + delta:
-                    text = '{0:0>9.6f} eV | k-point: {1:0>3d} | '\
+                    info = '{0:0>9.6f} eV | k-point: {1:0>3d} | '\
                            'bands: {2:0>2d} -> {3:0>2d}\n'\
                            .format(diff, kpt + 1, start, finish)
-                    file1.write(text)
-                    arrows = 'set arrow from {0},{1:.5f} to {0},{2:.5f}\n'\
+                    arrows = 'set arrow from {0},{1:.5f} to {0},{2:.5f}'\
                              .format(kpt + 1, orig - OFFSET, targ - OFFSET)
-                    file2.write(arrows)
-    file1.close()   # closes file
-    print('Writing ===> {0}'.format(textfile))
-    file2.close()   # closes file
+                    text = arrows + '   # ' + info
+                    file.write(text)
+    # file1.close()   # closes file
+    # print('Writing ===> {0}'.format(textfile))
+    file.close()   # closes file
     print('Writing ===> {0}'.format(arrowfile))
 
 transitions(args.input, args.valence, args.energy, args.delta)
