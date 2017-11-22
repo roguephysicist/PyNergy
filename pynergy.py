@@ -48,8 +48,8 @@ def transitions(inputfile, valence, energy, delta):
     file2 = open(arrowfile, 'w')    # opens output file for writing
     eigen = np.loadtxt(inputfile)   # creates a numpy array from input file
 
-    print 'Calculating transitions for {0} around {1} eV with a delta '\
-          'of {2}'.format(inputfile, energy, delta)
+    print('Calculating transitions for {0} around {1} eV with a delta '\
+          'of {2}'.format(inputfile, energy, delta))
 
     kpts = len(eigen)   # max k-points = file length
     bands = len(eigen[0])   # max bands = columns
@@ -70,8 +70,8 @@ def transitions(inputfile, valence, energy, delta):
                              .format(kpt + 1, orig - OFFSET, targ - OFFSET)
                     file2.write(arrows)
     file1.close()   # closes file
-    print 'Writing ===> {0}'.format(textfile)
+    print('Writing ===> {0}'.format(textfile))
     file2.close()   # closes file
-    print 'Writing ===> {0}'.format(arrowfile)
+    print('Writing ===> {0}'.format(arrowfile))
 
 transitions(args.input, args.valence, args.energy, args.delta)
