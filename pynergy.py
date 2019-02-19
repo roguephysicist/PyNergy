@@ -17,8 +17,6 @@ plottable file. You can then use that file to calculate the transitions.
 import argparse
 import numpy as np
 
-OFFSET = 0
-
 # parses command line options
 PARSER = argparse.ArgumentParser(description='This script calculates '\
                         'transition energies between energy bands '\
@@ -38,27 +36,24 @@ PARSER.add_argument('-f', '--efermi',
 PARSER.add_argument('-d', '--delta',
                     help='Energy delta in eV (default = 0.001 eV)',
                     type=float, default=0.001, required=False)
+PARSER.add_argument('-o', '--offset',
+                    help='Offest energy in eV, usually the VBM (optional)',
+                    type=float, default=0.0, required=False)
 ARGS = PARSER.parse_args()
 
 
-def transitions(inputfile, valence, energy, delta, efermi):
+def gentrans(eigen, valence, energy, delta, efermi, offset):
     """
     loops over all values in input file and calculates upward transitions
     and selects only the ones that match the desired value.
     """
-    arrowfile = 'gnuplotarrows'
-    file = open(arrowfile, 'w')    # opens output file for writing
-    eigen = np.loadtxt(inputfile)   # creates a numpy array from input file
-
-    print('Calculating transitions for {0} around {1} eV with a delta '\
-          'of {2}'.format(inputfile, energy, delta))
-
     if efermi is None:                      # sets efermi to max valence band
         efermi = np.max(eigen[:, valence])  # value, if not set by user
 
     kpts = len(eigen)       # max k-points = file length
     bands = len(eigen[0])   # max bands = columns
 
+    text = []
     for kpt in range(0, kpts):              # loops over k-points
         for start in range(1, valence+1):   # over all valence bands
             for finish in range(valence+1, bands):  # over conduction bands
@@ -68,7 +63,7 @@ def transitions(inputfile, valence, energy, delta, efermi):
                 # tests to see if diff is between desired value +/- delta
                 if energy - delta <= diff <= energy + delta:
                     arrows = 'set arrow from {0},{1:.5f} to {0},{2:.5f}'\
-                             .format(kpt + 1, orig - OFFSET, targ - OFFSET)
+                             .format(kpt + 1, orig - offset, targ - offset)
                     info = '{0:0>9.6f} eV | kpt: {1:0>3d} | '\
                            'bands: {2:0>2d}->{3:0>2d}'\
                            .format(diff, kpt + 1, start, finish)
@@ -76,9 +71,19 @@ def transitions(inputfile, valence, energy, delta, efermi):
                         suffix = " +efermi\n"
                     else:
                         suffix = "\n"
-                    text = arrows + ' # ' + info + suffix
-                    file.write(text)
-    file.close()   # closes file
-    print('Writing ===> {0}'.format(arrowfile))
+                    text.append(arrows + ' # ' + info + suffix)
+    return ''.join(text)
 
-transitions(ARGS.input, ARGS.valence, ARGS.energy, ARGS.delta, ARGS.efermi)
+
+print('Calculating transitions for {0} around {1} eV with a delta of {2}'
+      .format(ARGS.input, ARGS.energy, ARGS.delta))
+
+ARROWFILE = 'gnuplotarrows'
+EIGEN = np.loadtxt(ARGS.input)
+TRANS = gentrans(EIGEN, ARGS.valence, ARGS.energy, ARGS.delta, ARGS.efermi, ARGS.offset)
+
+print('Writing ===> {0}'.format(ARROWFILE))
+with open(ARROWFILE, 'w') as outfile:
+    print(TRANS, file=outfile)
+
+
