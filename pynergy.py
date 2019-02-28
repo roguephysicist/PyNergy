@@ -52,12 +52,17 @@ def gentrans(eigen, valence, energy, delta, efermi, offset, append):
     and selects only the ones that match the desired value.
     """
     if efermi is None:                      # sets efermi to max valence band
-        efermi = np.max(eigen[:, valence])  # value, if not set by user
+        VBM = np.max(eigen[:, valence])  # value, if not set by user
+        CBM = np.min(eigen[:, int(valence + 1)])  # value, if not set by user
+        efermi = (VBM + 0.5*(CBM - VBM)) - offset
 
     kpts = len(eigen)       # max k-points = file length
     bands = len(eigen[0])   # max bands = columns
+    header = '# Transitions around {0: 012.8f} eV +/- {1: 012.8f} eV,\n'\
+             '# efermi (w/offset) = {2: 012.8f}, plot offset = {3: 012.8f}\n'\
+             .format(energy, delta, efermi, offset)
 
-    text = []
+    text = [header]
     for kpt in range(0, kpts):              # loops over k-points
         for start in range(1, valence+1):   # over all valence bands
             for finish in range(valence+1, bands):  # over conduction bands
