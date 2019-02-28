@@ -39,10 +39,14 @@ PARSER.add_argument('-d', '--delta',
 PARSER.add_argument('-o', '--offset',
                     help='Offest energy in eV, usually the VBM (optional)',
                     type=float, default=0.0, required=False)
+PARSER.add_argument('-a', '--append',
+                    help='Append a string to the end of the \'set arrow\' commands,'\
+                          ' typically line style specifiers (optional)',
+                    type=str, default='', required=False)
 ARGS = PARSER.parse_args()
 
 
-def gentrans(eigen, valence, energy, delta, efermi, offset):
+def gentrans(eigen, valence, energy, delta, efermi, offset, append):
     """
     loops over all values in input file and calculates upward transitions
     and selects only the ones that match the desired value.
@@ -62,8 +66,8 @@ def gentrans(eigen, valence, energy, delta, efermi, offset):
                 diff = abs(orig - targ)     # the difference
                 # tests to see if diff is between desired value +/- delta
                 if energy - delta <= diff <= energy + delta:
-                    arrows = 'set arrow from {0},{1:.5f} to {0},{2:.5f}'\
-                             .format(kpt + 1, orig - offset, targ - offset)
+                    arrows = 'set arrow from {0},{1:.5f} to {0},{2:.5f} {3}'\
+                             .format(kpt + 1, orig - offset, targ - offset, append)
                     info = '{0:0>9.6f} eV | kpt: {1:0>3d} | '\
                            'bands: {2:0>2d}->{3:0>2d}'\
                            .format(diff, kpt + 1, start, finish)
@@ -80,7 +84,12 @@ print('Calculating transitions for {0} around {1} eV with a delta of {2}'
 
 ARROWFILE = 'gnuplotarrows'
 EIGEN = np.loadtxt(ARGS.input)
-TRANS = gentrans(EIGEN, ARGS.valence, ARGS.energy, ARGS.delta, ARGS.efermi, ARGS.offset)
+TRANS = gentrans(EIGEN, ARGS.valence,
+                        ARGS.energy,
+                        ARGS.delta,
+                        ARGS.efermi,
+                        ARGS.offset,
+                        ARGS.append)
 
 print('Writing ===> {0}'.format(ARROWFILE))
 with open(ARROWFILE, 'w') as outfile:
