@@ -39,14 +39,21 @@ PARSER.add_argument('-d', '--delta',
 PARSER.add_argument('-o', '--offset',
                     help='Offest energy in eV, usually the VBM (optional)',
                     type=float, default=0.0, required=False)
+PARSER.add_argument('-s', '--scissors',
+                    help='Rigid scissors correction in eV (optional)',
+                    type=float, default=0.0, required=False)
 PARSER.add_argument('-a', '--append',
                     help='Append a string to the end of the \'set arrow\' commands,'\
                           ' typically line style specifiers (optional)',
                     type=str, default='', required=False)
+PARSER.add_argument('--two-photon',
+                    help='Two-photon analysis: input 1w photon energy and will '\
+                          'find 2w transitions (optional)',
+                    action='store_true', default=False, required=False)
 ARGS = PARSER.parse_args()
 
 
-def gentrans(eigen, valence, energy, delta, efermi, offset, append):
+def gentrans(eigen, valence, tenergy, delta, efermi, offset, scissors, append, twophoton):
     """
     loops over all values in input file and calculates upward transitions
     and selects only the ones that match the desired value.
@@ -54,28 +61,51 @@ def gentrans(eigen, valence, energy, delta, efermi, offset, append):
     if efermi is None:                      # sets efermi to max valence band
         VBM = np.max(eigen[:, valence])  # value, if not set by user
         CBM = np.min(eigen[:, int(valence + 1)])  # value, if not set by user
-        efermi = (VBM + 0.5*(CBM - VBM)) - offset
+        efermi = (VBM + 0.5*(CBM - VBM)) - offset + scissors
 
     kpts = len(eigen)       # max k-points = file length
     bands = len(eigen[0])   # max bands = columns
-    header = '# Transitions around {0: 012.8f} eV +/- {1: 012.8f} eV,\n'\
-             '# efermi (w/offset) = {2: 012.8f}, plot offset = {3: 012.8f}\n'\
-             .format(energy, delta, efermi, offset)
+    if twophoton:
+        header = '# Transitions around (2 * {0} eV) +/- {1} eV,\n'\
+                 '# efermi (w/offset) = {2}, plot offset = {3}\n'\
+                 '# scissors shift = {4: .4f} eV\n'\
+                 .format(tenergy, delta, efermi, offset, scissors)
+    else:
+        header = '# Transitions around {0} eV +/- {1} eV,\n'\
+                 '# efermi (w/offset) = {2}, plot offset = {3}\n'\
+                 '# scissors shift = {4: .4f} eV\n'\
+                 .format(tenergy, delta, efermi, offset, scissors)
 
     text = [header]
     for kpt in range(0, kpts):              # loops over k-points
         for start in range(1, valence+1):   # over all valence bands
             for finish in range(valence+1, bands):  # over conduction bands
                 orig = eigen[kpt, start]    # value at origin band
-                targ = eigen[kpt, finish]   # value at target band
+                targ = eigen[kpt, finish] + scissors # value at target band + scissors
                 diff = abs(orig - targ)     # the difference
+                if twophoton:
+                    energy = 2*tenergy
+                else:
+                    energy = tenergy
                 # tests to see if diff is between desired value +/- delta
                 if energy - delta <= diff <= energy + delta:
-                    arrows = 'set arrow from {0},{1:.5f} to {0},{2:.5f} {3}'\
-                             .format(kpt + 1, orig - offset, targ - offset, append)
-                    info = '{0:0>9.6f} eV | kpt: {1:0>3d} | '\
-                           'bands: {2:0>2d}->{3:0>2d}'\
-                           .format(diff, kpt + 1, start, finish)
+                    if twophoton:
+                        arrows = 'set arrow from {0:3d},{1: .5f} to {0:3d},{2: .5f} {4}\n'\
+                                 'set arrow from {0:3d},{2: .5f} to {0:3d},{3: .5f} {4}'\
+                                 .format(kpt + 1,
+                                         orig - offset,
+                                         ((orig+targ)/2) - offset,
+                                         targ - offset,
+                                         append)
+                        info = '{0:0>9.6f} eV | kpt: {1:0>3d} | '\
+                               'bands: {2:0>2d}->{3:0>2d}'\
+                               .format(diff, kpt + 1, start, finish)
+                    else:
+                        arrows = 'set arrow from {0:3d},{1: .5f} to {0:3d},{2: .5f} {3}'\
+                                 .format(kpt + 1, orig - offset, targ - offset, append)
+                        info = '{0:0>9.6f} eV | kpt: {1:0>3d} | '\
+                               'bands: {2:0>2d}->{3:0>2d}'\
+                               .format(diff, kpt + 1, start, finish)
                     if targ > efermi:
                         suffix = " +efermi\n"
                     else:
@@ -84,8 +114,12 @@ def gentrans(eigen, valence, energy, delta, efermi, offset, append):
     return ''.join(text)
 
 
-print('Calculating transitions for {0} around {1} eV with a delta of {2}'
-      .format(ARGS.input, ARGS.energy, ARGS.delta))
+if ARGS.two_photon:
+    print('Calculating 2w transitions around 2*{0} = {1} eV with a delta of {2}'
+          .format(ARGS.energy, 2*ARGS.energy, ARGS.delta))
+else:
+    print('Calculating transitions around {0} eV with a delta of {1}'
+          .format(ARGS.energy, ARGS.delta))
 
 ARROWFILE = 'gnuplotarrows'
 EIGEN = np.loadtxt(ARGS.input)
@@ -94,7 +128,9 @@ TRANS = gentrans(EIGEN, ARGS.valence,
                         ARGS.delta,
                         ARGS.efermi,
                         ARGS.offset,
-                        ARGS.append)
+                        ARGS.scissors,
+                        ARGS.append,
+                        ARGS.two_photon)
 
 print('Writing ===> {0}'.format(ARROWFILE))
 with open(ARROWFILE, 'w') as outfile:
