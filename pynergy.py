@@ -90,7 +90,7 @@ def gentrans(eigen, valence, tenergy, delta, efermi, offset, scissors, append, t
                 # tests to see if diff is between desired value +/- delta
                 if energy - delta <= diff <= energy + delta:
                     if twophoton:
-                        arrows = 'set arrow from {0:3d},{1: .5f} to {0:3d},{2: .5f} {4}\n'\
+                        arrows = 'set arrow from {0:3d},{1: .5f} to {0:3d},{2: .5f} {4}; '\
                                  'set arrow from {0:3d},{2: .5f} to {0:3d},{3: .5f} {4}'\
                                  .format(kpt + 1,
                                          orig - offset,
